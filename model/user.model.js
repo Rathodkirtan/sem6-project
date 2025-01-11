@@ -13,6 +13,14 @@ const userSchema=new mongoose.Schema({
     type:String,
     require:true,
   },
+  contact:{
+    type:Number,
+    require:true
+  },
+  address:{
+    type:String,
+    require:true
+  },
   isAdmin:{
     type:Boolean,
     default:false,
