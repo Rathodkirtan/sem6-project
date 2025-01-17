@@ -1,5 +1,6 @@
 import express from  'express'
 import {Admincontact,Adminfranchise,Adminuser} from '../controllers/Admincontact-controller.js'
+import isLoggedIn from '../middleware/isloggin.js';
 
 const router=express.Router();
 

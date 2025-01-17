@@ -1,10 +1,13 @@
 import userSchema from "../model/user.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import dotenv from 'dotenv'
+
+dotenv.config();
 
 const register = async (req, res) => {
   try {
-    const { fullname, email, password,contact,address } = req.body;
+    const { fullname, email, password, contact, address } = req.body;
 
     const user = await userSchema.findOne({ email });
     if (user) {
@@ -21,11 +24,11 @@ const register = async (req, res) => {
       contact,
       address,
     });
-    const token = await jwt.sign({ email: createuser.email }, "shhhhsshhh");
+    const token = await jwt.sign({ email: createuser.email },process.env.JWT_SECRET);
     return res
       .status(200)
       .cookie("token", token)
-      .json({ status: "create user", token: token });
+      .send({ status: "create user", token: token });
   } catch (error) {
     console.log(error);
   }
@@ -37,11 +40,13 @@ const login = async (req, res) => {
   if (user) {
     const result = await bcrypt.compare(password, user.password);
     if (result) {
-      const token = await jwt.sign({ email: user.email }, "shhhhsshhh");
-      console.log(req.cookie.token);
+      const token = await jwt.sign({ email: user.email }, process.env.JWT_SECRET);
       return res
         .status(200)
-        .cookie("token", token)
+        .cookie("token", token, {
+          httpOnly: true,
+          secure: true,
+        })
         .json({ result: "login success", token: token });
     }
     return res.status(300).json({ result: "password is increct" });
@@ -51,7 +56,7 @@ const login = async (req, res) => {
 
 const logout = (req, res) => {
   try {
-    console.log(req.cookie);
+    // console.log(req.cookie);
     return res.status(200).cookie("token", "").json({
       status: "logout success",
     });
